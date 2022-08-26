@@ -1,0 +1,61 @@
+#!/bin/bash
+
+module load mpi/hpcx
+
+SHARP_ARGS=""
+if [ $SHARP -eq "1" ]; then
+    SHARP_ARGS="-x NCCL_COLLNET_ENABLE=1 -x NCCL_ALGO=CollNet -x SHARP_COLL_ENABLE_SAT=1 \
+    -x SHARP_COLL_LOG_LEVEL=3  -x NCCL_DEBUG_SUBSYS=INIT -x SHARP_COLL_ENABLE_PCI_RELAXED_ORDERING=1 \
+    -x SHARP_COLL_NUM_COLL_GROUP_RESOURCE_ALLOC_THRESHOLD=0 -x SHARP_COLL_LOCK_ON_COMM_INIT=1"
+fi
+
+MSG_START="8"
+MSG_END="16G"
+PPN=8
+
+LOCAL_ARGS=""
+if [ $LOCAL -eq "1" ]; then
+	LOCAL_ARGS="-x NCCL_P2P_DISABLE=1 -x NCCL_SHM_DISABLE=1"
+	MSG_START="4G"
+	MSG_END="4G"
+fi
+
+TEST=all_reduce_perf
+if [ $ALLTOALL -eq "1" ]; then
+    TEST=alltoall_perf
+    MSG_START="8"
+    MSG_END="16G"
+fi
+
+date
+
+ALG_ARGS=""
+PROTO_ARGS=""
+
+if [ "$ALG" != "default" ]; then
+    ALG_ARGS="-x NCCL_ALGO=$ALG"
+fi
+
+if [ "$PROTO" != "default" ]; then
+    PROTO_ARGS="-x NCCL_PROTO=$PROTO"
+    if [ "$PROTO" = "ll" ]; then
+        MSG_END="1G"
+    fi
+fi
+
+echo "NODE_LIST: ${NODES_LIST}"
+echo "ALG PROTO: ${ALG_ARGS} ${PROTO_ARGS}"
+
+#       -x LD_LIBRARY_PATH=/home/jijos/nccl-2.12.10-1/build/lib:/usr/local/nccl-rdma-sharp-plugins/lib:$LD_LIBRARY_PATH \
+#       -x LD_LIBRARY_PATH=/usr/local/nccl-rdma-sharp-plugins/lib:$LD_LIBRARY_PATH \
+#ALGO = tree, ring
+#PROTO = simple, LL128, LL
+
+mpirun -np $(( $NODES * ${PPN} )) --map-by ppr:${PPN}:node -hostfile ${PBS_NODEFILE} --timeout 1800 \
+       -x LD_LIBRARY_PATH=/mnt/nfs/zhanj/nccl/build/lib:/usr/local/nccl-rdma-sharp-plugins/lib:$LD_LIBRARY_PATH \
+       -mca coll_hcoll_enable 0 --bind-to numa \
+       -x NCCL_IB_PCI_RELAXED_ORDERING=1 -x CUDA_DEVICE_ORDER=PCI_BUS_ID \
+       -x NCCL_SOCKET_IFNAME=eth0 -x NCCL_TOPO_FILE=/opt/microsoft/ndv4-topo.xml \
+       -x NCCL_DEBUG=warn ${SHARP_ARGS} ${LOCAL_ARGS} \
+       ${ALG_ARGS} ${PROTO_ARGS} \
+       /opt/nccl-tests/build/${TEST} -b ${MSG_START} -e ${MSG_END} -f 2 -g 1 -c 0 -n 50
