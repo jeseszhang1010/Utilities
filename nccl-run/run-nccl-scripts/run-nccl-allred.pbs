@@ -11,7 +11,6 @@ fi
 
 MSG_START="8"
 MSG_END="16G"
-PPN=8
 
 LOCAL_ARGS=""
 if [ $LOCAL -eq "1" ]; then
@@ -23,39 +22,17 @@ fi
 TEST=all_reduce_perf
 if [ $ALLTOALL -eq "1" ]; then
     TEST=alltoall_perf
-    MSG_START="8"
-    MSG_END="16G"
 fi
 
 date
+echo ${NODES_LIST}
 
-ALG_ARGS=""
-PROTO_ARGS=""
+parallel-ssh -h ${PBS_NODEFILE} sudo ~/gpu_clock.py -p None
 
-if [ "$ALG" != "default" ]; then
-    ALG_ARGS="-x NCCL_ALGO=$ALG"
-fi
-
-if [ "$PROTO" != "default" ]; then
-    PROTO_ARGS="-x NCCL_PROTO=$PROTO"
-    if [ "$PROTO" = "ll" ]; then
-        MSG_END="1G"
-    fi
-fi
-
-echo "NODE_LIST: ${NODES_LIST}"
-echo "ALG PROTO: ${ALG_ARGS} ${PROTO_ARGS}"
-
-#       -x LD_LIBRARY_PATH=/home/jijos/nccl-2.12.10-1/build/lib:/usr/local/nccl-rdma-sharp-plugins/lib:$LD_LIBRARY_PATH \
-#       -x LD_LIBRARY_PATH=/usr/local/nccl-rdma-sharp-plugins/lib:$LD_LIBRARY_PATH \
-#ALGO = tree, ring
-#PROTO = simple, LL128, LL
-
-mpirun -np $(( $NODES * ${PPN} )) --map-by ppr:${PPN}:node -hostfile ${PBS_NODEFILE} --timeout 1800 \
-       -x LD_LIBRARY_PATH=/mnt/nfs/zhanj/nccl/build/lib:/usr/local/nccl-rdma-sharp-plugins/lib:$LD_LIBRARY_PATH \
+mpirun -np $(( $NODES * 8 )) --map-by ppr:8:node -hostfile ${PBS_NODEFILE} --timeout 1800 \
+       -x LD_LIBRARY_PATH=/usr/local/nccl-rdma-sharp-plugins/lib:$LD_LIBRARY_PATH \
        -mca coll_hcoll_enable 0 --bind-to numa \
        -x NCCL_IB_PCI_RELAXED_ORDERING=1 -x CUDA_DEVICE_ORDER=PCI_BUS_ID \
        -x NCCL_SOCKET_IFNAME=eth0 -x NCCL_TOPO_FILE=/opt/microsoft/ndv4-topo.xml \
-       -x NCCL_DEBUG=warn ${SHARP_ARGS} ${LOCAL_ARGS} \
-       ${ALG_ARGS} ${PROTO_ARGS} \
-       /opt/nccl-tests/build/${TEST} -b ${MSG_START} -e ${MSG_END} -f 2 -g 1 -c 0 -n 50
+       -x NCCL_DEBUG=WARN ${SHARP_ARGS} ${LOCAL_ARGS} \
+       /opt/nccl-tests/build/${TEST} -b ${MSG_START} -e ${MSG_END} -f 2 -g 1 -c 1 -n 50
