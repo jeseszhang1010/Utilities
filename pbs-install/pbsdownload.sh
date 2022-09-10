@@ -20,7 +20,7 @@ echo "OS Major Version: $os_maj_ver"
 if [ "$os_release" == "centos" ];then
     filename=openpbs_${pbs_ver}.centos_8
 elif [ "$os_release" == "ubuntu" ];then
-    filename=openpbs_${pbs_ver}.ubuntu_1804
+    filename=openpbs_${pbs_ver}.ubuntu_18.04
 fi
 
 echo "$filename"
