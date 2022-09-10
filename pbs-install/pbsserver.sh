@@ -3,6 +3,7 @@ set -e
 
 if [ $# -ne 1 ]; then
     echo "Usage: sudo ./pbsserver <admin_username>"
+    exit 1
 fi
 admin_user=$1
 
