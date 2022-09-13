@@ -9,7 +9,7 @@
 # 
 
 
-LOG_PATH=/dev/shm/phase2.healthy-276-scale-2.14-nccl-allreduce
+LOG_PATH=/dev/shm/phase2.healthy-276-scale-2.14-nccl-reducescatter
 
 
 msgunit=(4 8 16 32 64 128 256 512 1K 2K 4K 8K 16K 32K 64K 128K 256K 512K 1M 2M 4M 8M 16M 32M 64M 128M 256M 512M 1G 2G 4G 8G 16G)
@@ -29,7 +29,8 @@ add_msg_unit() {
 declare -a bwsum
 declare -a msg
 
-for s in 4 8 16 32 64 128 256 276; do # for allreduce
+for s in 4 8 16 32 64 128 256 276; do # for reducescatter
+#for s in 4 8 16 32 64 128 200 256 ; do # for alltoall, 400, 440, 471 no data
 
     if [ -d "${LOG_PATH}-${s}" ]; then
         echo "Enter log dir ${LOG_PATH}-${s}"
@@ -62,7 +63,7 @@ for s in 4 8 16 32 64 128 256 276; do # for allreduce
         ((fn++))
         for i in $(seq 1 32); do
             #lat=$(sed -n "${i}p" $f | awk '{print $10}')
-            bw=$(sed -n "${i}p" $f | awk '{print $12}')
+            bw=$(sed -n "${i}p" $f | awk '{print $11}')
             if [ $fn -eq 1 ]; then
                 msg[$i]=$(sed -n "${i}p" $f | awk '{print $2}')
                 bwsum[$i]=$bw
@@ -74,18 +75,18 @@ for s in 4 8 16 32 64 128 256 276; do # for allreduce
         done
     done
 
-    if [ -f "allreduce-scale-${s}-bw-avg.dat" ]; then
-        rm -rf allreduce-scale-${s}-bw-avg.dat
+    if [ -f "reducescatter-scale-${s}-bw-avg.dat" ]; then
+        rm -rf reducescatter-scale-${s}-bw-avg.dat
     fi
     for i in $(seq 1 32); do
         bwavg=$(echo "scale=2; ${bwsum[$i]} / $fn" | bc -l)
-        echo -e "${msgunit[$i]}\t${msg[$i]}\t${bwavg}" >> allreduce-scale-${s}-bw-avg.dat
+        echo -e "${msgunit[$i]}\t${msg[$i]}\t${bwavg}" >> reducescatter-scale-${s}-bw-avg.dat
     done
 
 done
 
 #echo "Plotting with average BW of all scales"
-gnuplot allreduce-scale-all-avg-lp.plot && epstopdf allreduce-scale-all-avg.eps && rm -rf allreduce-scale-all-avg.eps
+gnuplot reducescatter-scale-all-avg-lp.plot && epstopdf reducescatter-scale-all-avg.eps && rm -rf reducescatter-scale-all-avg.eps
 
 
 

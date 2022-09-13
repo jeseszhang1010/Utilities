@@ -5,7 +5,7 @@
 # 
 
 
-LOG_PATH=/dev/shm/phase2-pair-wise/nccl-allred-phase2-2n-0822
+LOG_PATH=/dev/shm/phase2-allpairs-allreduce-with-rerun
 
 
 msgunit=(4 8 16 32 64 128 256 512 1K 2K 4K 8K 16K 32K 64K 128K 256K 512K 1M 2M 4M 8M 16M 32M 64M 128M 256M 512M 1G 2G 4G 8G 16G)
@@ -37,5 +37,5 @@ for f in $(find ${LOG_PATH} -type f -name '*.o*'); do
 done
 
 echo "Plotting with BW at 16g msg size of pairwise-16g"
-gnuplot pairwise-16g-point.plot && epstopdf pairwise-16g.eps && rm -rf pairwise-16g.eps
+#gnuplot pairwise-16g-point.plot && epstopdf pairwise-16g.eps && rm -rf pairwise-16g.eps
 

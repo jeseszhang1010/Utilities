@@ -9,15 +9,7 @@
 # 
 
 
-if [ $# -ne 2 ]; then
-   echo "Usage: $0 <algo> <proto>"
-   exit 1
-fi
-
-algo=$1
-proto=$2
-
-LOG_PATH=/home/zhanj/nccl/phase2-handover/phase2-vms-scale-res-2022-08-25/nccl-alltoall-$algo-$proto
+LOG_PATH=/dev/shm/phase2.healthy-276-scale-2.14-nccl-alltoall
 
 #msgunit=(4 8 16 32 64 128 256 512 1K 2K 4K 8K 16K 32K 64K 128K 256K 512K 1M 2M 4M 8M 16M 32M 64M 128M 256M 512M 1G 2G 4G 8G 16G)
 msgunit=(64 128 256 512 1K 2K 4K 8K 16K 32K 64K 128K 256K 512K 1M 2M 4M 8M 16M 32M 64M 128M 256M 512M 1G 2G 4G 8G 16G)
@@ -29,28 +21,6 @@ add_msg_unit() {
     done
 }
 
-## Generate scale-2-comb-16g.dat:
-## Go to nccl-allred-2 directory,
-## extract BW data at 16g message size of all job output,
-## save to scale-2-comb-16g.dat file
-#
-#comb_16g_name=scale-2-comb-16g
-#
-#if [ -f "$comb_16g_name.dat" ]; then
-#    rm -rf $comb_16g_name.dat
-#fi
-#
-#echo "Extracting BW at 16g msg size from scale-2-comb"
-#line=0
-#for f in $(find ${LOG_PATH} -type f -name '*.o*'); do
-#    line=$(($line+1))
-#    bw=$(cat $f | grep 17179869184 | tail -1 | awk '{print $10}')
-#    #bw=$(cat $f | grep 8589934592 | tail -1 | awk '{print $10}')
-#    echo -e "$line\t${f}\t$bw" >> $comb_16g_name.dat
-#done
-#echo "Plotting with BW at 16g msg size of scale-2-16g-comb"
-#gnuplot scale-2-comb-16g-point.plot && epstopdf scale-2-comb-16g.eps && rm -rf scale-2-comb-16g.eps
-
 
 # Go to each scale directory
 # 1. extract data from each job output, and save to *.dat file
@@ -59,10 +29,12 @@ add_msg_unit() {
 declare -a bwsum
 declare -a msg
 
-#delta=32
-#for s in 4 8 16 32 64 128 200 256 400 440 471; do # for allreduce
 delta=32
-for s in 2 4 8 16 32 64 128 213; do # for alltoall, 400, 440, 471 no data
+if [ "$proto" = "ll" ]; then
+    delta=28
+fi
+
+for s in 4 8 16 32 64 128 256; do # for alltoall, 400, 440, 471 no data
 
     if [ -d "${LOG_PATH}-${s}" ]; then
         echo "Enter log dir ${LOG_PATH}-${s}"
@@ -75,11 +47,11 @@ for s in 2 4 8 16 32 64 128 213; do # for alltoall, 400, 440, 471 no data
     rm -rf ${LOG_PATH}-${s}/*.dat
     for f in $(ls ${LOG_PATH}-${s}/*.o*); do
         filename=$(basename $f)
+        echo $filename
         ln=$(grep -Fn 'Out of bounds values :' $f | cut -d ':' -f 1)
         stln=$(($ln-$delta))
         endln=$(($ln-1))
         sed -n "${stln},${endln}p" $f > ${LOG_PATH}-${s}/$filename.dat
-        #add_msg_unit ${LOG_PATH}-${s}/$filename.dat
     done
 
     #sed "s/fillupscale/${s}/g" scale-all-lp.plot > scale-${s}-lp.plot
@@ -101,20 +73,21 @@ for s in 2 4 8 16 32 64 128 213; do # for alltoall, 400, 440, 471 no data
             fi
         done
     done
+    
+    bw_avg_fname="alltoall-scale-$s-bw-avg.dat"
 
-    if [ -f "scale-${s}-bw-avg.dat" ]; then
-        rm -rf scale-${s}-bw-avg.dat
+    if [ -f "$bw_avg_fname" ]; then
+        rm -rf $bw_avg_fname 
     fi
     for i in $(seq 1 $delta); do
         bwavg=$(echo "scale=2; ${bwsum[$i]} / $fn" | bc -l)
-        echo -e "${msg[$i]}\t${bwavg}" >> alltoall-scale-${s}-bw-avg.dat
+        echo -e "${msg[$i]}\t${bwavg}" >> $bw_avg_fname
     done
-    #delta=$(($delta-1))
 
 done
 
-echo "Plotting with average BW of all scales"
-gnuplot scale-all-avg-lp.plot && epstopdf scale-all-avg.eps && rm -rf scale-all-avg.eps
+#echo "Plotting with average BW of all scales"
+gnuplot alltoall-scale-all-avg-lp.plot && epstopdf alltoall-scale-all-avg.eps && rm -rf alltoall-scale-all-avg.eps
 
 
 
