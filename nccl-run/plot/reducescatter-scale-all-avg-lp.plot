@@ -20,13 +20,13 @@ set key left top
 set grid
 
 # for reducescatter
-plot 'reducescatter-scale-4-bw-avg.dat' u 2:3 w lp title 'Scale=4', \
-     'reducescatter-scale-8-bw-avg.dat' u 2:3 w lp title 'Scale=8', \
-     'reducescatter-scale-16-bw-avg.dat' u 2:3 w lp title 'Scale=16', \
-     'reducescatter-scale-32-bw-avg.dat' u 2:3 w lp title 'Scale=32', \
-     'reducescatter-scale-64-bw-avg.dat' u 2:3 w lp title 'Scale=64', \
-     'reducescatter-scale-128-bw-avg.dat' u 2:3 w lp title 'Scale=128', \
-     'reducescatter-scale-256-bw-avg.dat' u 2:3 w lp title 'Scale=256',\
-     'reducescatter-scale-276-bw-avg.dat' u 2:3 w lp title 'Scale=276'
+plot 'reducescatter-scale-4-bw-avg.dat' u 1:2 w lp title 'Scale=4', \
+     'reducescatter-scale-8-bw-avg.dat' u 1:2 w lp title 'Scale=8', \
+     'reducescatter-scale-16-bw-avg.dat' u 1:2 w lp title 'Scale=16', \
+     'reducescatter-scale-32-bw-avg.dat' u 1:2 w lp title 'Scale=32', \
+     'reducescatter-scale-64-bw-avg.dat' u 1:2 w lp title 'Scale=64', \
+     'reducescatter-scale-128-bw-avg.dat' u 1:2 w lp title 'Scale=128', \
+     'reducescatter-scale-256-bw-avg.dat' u 1:2 w lp title 'Scale=256',\
+     'reducescatter-scale-276-bw-avg.dat' u 1:2 w lp title 'Scale=276'
 
 

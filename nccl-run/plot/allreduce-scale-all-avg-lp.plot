@@ -21,12 +21,12 @@ set key left top
 set grid
 
 # for allreduce
-plot 'allreduce-scale-4-bw-avg.dat' u 2:3:xtic(1) w lp title 'Scale=4', \
-     'allreduce-scale-8-bw-avg.dat' u 2:3:xtic(1) w lp title 'Scale=8', \
-     'allreduce-scale-16-bw-avg.dat' u 2:3:xtic(1) w lp title 'Scale=16', \
-     'allreduce-scale-32-bw-avg.dat' u 2:3:xtic(1) w lp title 'Scale=32', \
-     'allreduce-scale-64-bw-avg.dat' u 2:3:xtic(1) w lp title 'Scale=64', \
-     'allreduce-scale-128-bw-avg.dat' u 2:3:xtic(1) w lp title 'Scale=128', \
-     'allreduce-scale-256-bw-avg.dat' u 2:3:xtic(1) w lp title 'Scale=256',\
-     'allreduce-scale-276-bw-avg.dat' u 2:3:xtic(1) w lp title 'Scale=276'
-
+plot 'allreduce-scale-4-bw-avg.dat' u 1:2 w lp title 'Scale=4', \
+     'allreduce-scale-8-bw-avg.dat' u 1:2 w lp title 'Scale=8', \
+     'allreduce-scale-16-bw-avg.dat' u 1:2 w lp title 'Scale=16', \
+     'allreduce-scale-32-bw-avg.dat' u 1:2 w lp title 'Scale=32', \
+     'allreduce-scale-64-bw-avg.dat' u 1:2 w lp title 'Scale=64', \
+     'allreduce-scale-128-bw-avg.dat' u 1:2 w lp title 'Scale=128', \
+     'allreduce-scale-256-bw-avg.dat' u 1:2 w lp title 'Scale=256', \
+     'allreduce-scale-512-bw-avg.dat' u 1:2 w lp title 'Scale=512', \
+     'allreduce-scale-699-bw-avg.dat' u 1:2 w lp title 'Scale=699'

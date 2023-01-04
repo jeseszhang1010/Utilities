@@ -28,4 +28,6 @@ plot 'alltoall-scale-4-bw-avg.dat' u 1:2 w lp title 'Scale=4', \
      'alltoall-scale-32-bw-avg.dat' u 1:2 w lp title 'Scale=32', \
      'alltoall-scale-64-bw-avg.dat' u 1:2 w lp title 'Scale=64', \
      'alltoall-scale-128-bw-avg.dat' u 1:2 w lp title 'Scale=128', \
-     'alltoall-scale-256-bw-avg.dat' u 1:2 w lp title 'Scale=256'
+     'alltoall-scale-256-bw-avg.dat' u 1:2 w lp title 'Scale=256', \
+     'alltoall-scale-512-bw-avg.dat' u 1:2 w lp title 'Scale=512', \
+     'alltoall-scale-699-bw-avg.dat' u 1:2 w lp title 'Scale=699'

@@ -20,13 +20,13 @@ set key left top
 set grid
 
 # for allgather
-plot 'allgather-scale-4-bw-avg.dat' u 2:3 w lp title 'Scale=4', \
-     'allgather-scale-8-bw-avg.dat' u 2:3 w lp title 'Scale=8', \
-     'allgather-scale-16-bw-avg.dat' u 2:3 w lp title 'Scale=16', \
-     'allgather-scale-32-bw-avg.dat' u 2:3 w lp title 'Scale=32', \
-     'allgather-scale-64-bw-avg.dat' u 2:3 w lp title 'Scale=64', \
-     'allgather-scale-128-bw-avg.dat' u 2:3 w lp title 'Scale=128', \
-     'allgather-scale-256-bw-avg.dat' u 2:3 w lp title 'Scale=256',\
-     'allgather-scale-276-bw-avg.dat' u 2:3 w lp title 'Scale=276'
+plot 'allgather-scale-4-bw-avg.dat' u 1:2 w lp title 'Scale=4', \
+     'allgather-scale-8-bw-avg.dat' u 1:2 w lp title 'Scale=8', \
+     'allgather-scale-16-bw-avg.dat' u 1:2 w lp title 'Scale=16', \
+     'allgather-scale-32-bw-avg.dat' u 1:2 w lp title 'Scale=32', \
+     'allgather-scale-64-bw-avg.dat' u 1:2 w lp title 'Scale=64', \
+     'allgather-scale-256-bw-avg.dat' u 1:2 w lp title 'Scale=256', \
+     'allgather-scale-512-bw-avg.dat' u 1:2 w lp title 'Scale=512', \
+     'allgather-scale-699-bw-avg.dat' u 1:2 w lp title 'Scale=699'
 
 

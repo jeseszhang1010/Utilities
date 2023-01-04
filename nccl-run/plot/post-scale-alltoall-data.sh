@@ -1,15 +1,18 @@
 #!/bin/bash
 
-# This script assumes the pbs output files (*.o*)
+# This script assumes the pbs output files (*.OU)
 # are placed under ${LOG_PATH}-{scale},
 # e.g.,
-# all 2 nodes output (*.o*) are placed under ${LOG_PATH}-2.
-# all 4 nodes output (*.o*) are placed under ${LOG_PATH}-4.
+# all 2 nodes output (*.OU) are placed under ${LOG_PATH}-2.
+# all 4 nodes output (*.OU) are placed under ${LOG_PATH}-4.
 # Thus, set the variable LOG_PATH based on your layout.
 # 
 
-
-LOG_PATH=/dev/shm/phase2.healthy-276-scale-2.14-nccl-alltoall
+if [ $# -ne "1" ]; then
+    echo "Usage: $0 <LOGPATH>"
+    exit 1
+fi
+LOG_PATH=$1
 
 #msgunit=(4 8 16 32 64 128 256 512 1K 2K 4K 8K 16K 32K 64K 128K 256K 512K 1M 2M 4M 8M 16M 32M 64M 128M 256M 512M 1G 2G 4G 8G 16G)
 msgunit=(64 128 256 512 1K 2K 4K 8K 16K 32K 64K 128K 256K 512K 1M 2M 4M 8M 16M 32M 64M 128M 256M 512M 1G 2G 4G 8G 16G)
@@ -34,7 +37,7 @@ if [ "$proto" = "ll" ]; then
     delta=28
 fi
 
-for s in 4 8 16 32 64 128 256; do # for alltoall, 400, 440, 471 no data
+for s in 4 8 16 32 64 128 256 512 699; do # for alltoall, 400, 440, 471 no data
 
     if [ -d "${LOG_PATH}-${s}" ]; then
         echo "Enter log dir ${LOG_PATH}-${s}"
@@ -45,7 +48,7 @@ for s in 4 8 16 32 64 128 256; do # for alltoall, 400, 440, 471 no data
 
     echo "Extracting BW data from ${LOG_PATH}-${s} job output" 
     rm -rf ${LOG_PATH}-${s}/*.dat
-    for f in $(ls ${LOG_PATH}-${s}/*.o*); do
+    for f in $(ls ${LOG_PATH}-${s}/*.OU); do
         filename=$(basename $f)
         echo $filename
         ln=$(grep -Fn 'Out of bounds values :' $f | cut -d ':' -f 1)
@@ -64,7 +67,7 @@ for s in 4 8 16 32 64 128 256; do # for alltoall, 400, 440, 471 no data
     for f in $(ls ${LOG_PATH}-${s}/*.dat); do
         ((fn++))
         for i in $(seq 1 $delta); do
-            bw=$(sed -n "${i}p" $f | awk '{print $10}')
+            bw=$(sed -n "${i}p" $f | awk '{print $12}')
             if [ $fn -eq 1 ]; then
                 msg[$i]=$(sed -n "${i}p" $f | awk '{print $1}')
                 bwsum[$i]=$bw
@@ -86,8 +89,8 @@ for s in 4 8 16 32 64 128 256; do # for alltoall, 400, 440, 471 no data
 
 done
 
-#echo "Plotting with average BW of all scales"
-gnuplot alltoall-scale-all-avg-lp.plot && epstopdf alltoall-scale-all-avg.eps && rm -rf alltoall-scale-all-avg.eps
+echo "Plotting with average BW of all scales"
+#gnuplot alltoall-scale-all-avg-lp.plot && epstopdf alltoall-scale-all-avg.eps && rm -rf alltoall-scale-all-avg.eps
 
 
 

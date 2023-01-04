@@ -7,7 +7,7 @@ set xlabel "Node Pair" offset 0,-0.5,0
 set ylabel "BW (GB/s)"
 set yrange [100:200]
 set ytics 5
-set xrange [0:38000]
+set xrange [0:250000]
 
 unset key 
 set grid
