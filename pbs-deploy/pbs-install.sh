@@ -87,3 +87,5 @@ fi
 # variables by sourcing the appropriate PBS profile or logging out and back in.
 . /etc/profile.d/pbs.sh
 
+ssh ${SERVERNAME} "sudo /opt/pbs/bin/qmgr -c \"create node $(hostname)\""
+pbsnodes $(hostname)
