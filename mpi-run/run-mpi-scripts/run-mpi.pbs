@@ -1,0 +1,26 @@
+#!/bin/bash
+
+module load mpi/hpcx
+#-x UCX_TLS=rc \
+#-mca coll_hcoll_enable 0 
+
+echo "Start running ${BENCH} on ${NODES_LIST} at $(date)"
+
+if [[ $BENCH == *"mpiGraph"* ]] || [[ $BENCH == *"mpiBench"* ]]; then
+    BENCH_TO_RUN="$BENCH $ARGS"
+    #BENCH_TO_RUN="$BENCH 536870912 400 2"
+else
+    BENCH_TO_RUN="${HPCX_DIR}/ompi/tests/osu-micro-benchmarks-5.8/osu_${BENCH} ${ARGS}"
+fi
+
+       #-x HCOLL_MAIN_IB=mlx5_ib0:1  -x HCOLL_ENABLE_SHARP=2  -x SHARP_COLL_LOG_LEVEL=3  \
+       #-x HCOLL_SHARP_NP=2  \
+       #-x SHARP_COLL_JOB_QUOTA_MAX_GROUPS=1 \
+       #-x SHARP_COLL_JOB_QUOTA_OSTS=1024 \
+       #-x SHARP_COLL_JOB_QUOTA_PAYLOAD_PER_OST=256 \
+
+mpirun -np $(( $NODES * $PPN )) --map-by ppr:$PPN:node \
+       -hostfile ${PBS_NODEFILE} -x LD_LIBRARY_PATH --timeout 3600 \
+       $BENCH_TO_RUN
+
+echo "Finish running ${BENCH} on ${NODES_LIST} at $(date)"

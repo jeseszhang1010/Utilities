@@ -1,0 +1,8 @@
+#!/bin/bash
+
+LOG_PATH=$1
+
+for f in $(find ${LOG_PATH} -type f -name '*.OU'); do
+    pair=$(head -1 $f | awk '{print $5}')
+    sed -i "/^$pair/d" pairwise.out
+done
