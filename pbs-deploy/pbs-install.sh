@@ -11,8 +11,8 @@ SERVERCLIENT=$1
 SERVERNAME=$2
 
 # Check to see if pbs is already installed
-if [ $(sudo systemctl status pbs) ];then
-    echo "OpenPBS is already installed and started, nothing to do"
+if [ -f /etc/pbs.conf ];then
+    echo "OpenPBS is already installed, nothing to do"
     exit 0
 fi
 
@@ -31,7 +31,7 @@ echo "OS Release: $os_release"
 echo "OS Major Version: $os_maj_ver"
 
 # Download OpenPBS tarball
-if [ "SERVERCLIENT" = "server" ]; then
+if [ "$SERVERCLIENT" = "server" ]; then
     wget https://github.com/openpbs/openpbs/archive/refs/tags/v22.05.11.tar.gz
 fi
 tar xf v22.05.11.tar.gz
