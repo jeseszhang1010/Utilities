@@ -1,0 +1,24 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "vmSku": {
+            "value": "Standard_ND96isr_H100_v5"
+        },
+        "vmssName": {
+            "value": "zhanj-iad03-tip"
+        },
+        "instanceCount": {
+            "value": 1
+        },
+        "adminUsername": {
+            "value": "hpcuser"
+        },
+        "adminPassword": {
+            "value": "HPC@2024!"
+        },
+        "tipSessionId": {
+            "value": "3fa279ca-2720-4ce6-a0c8-0bd6745dc917"
+        }
+    }
+}
