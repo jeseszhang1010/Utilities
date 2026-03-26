@@ -69,7 +69,6 @@ NCCL_ENV="
   -x NCCL_IB_HCA=mlx5_1,mlx5_0,mlx5_3,mlx5_2 \
   -x NCCL_IB_ECE_ENABLE=0 \
   -x NCCL_IB_GID_INDEX=3 \
-  -x NCCL_CROSS_NIC=0 \
   -x NCCL_NVLS_ENABLE=0 \
   -x NCCL_GDR_FLUSH_DISABLE=1 \
   -x NCCL_IB_QPS_PER_CONNECTION=2 \
@@ -77,16 +76,16 @@ NCCL_ENV="
   -x NCCL_IB_TC=$((1 << 2)) -x NCCL_IB_FIFO_TC=$((3 << 2)) \
   -x NV_MRC_POST_SEND_PREFER_BF=1"
 
-#if [ "$PPN" -eq 4 ]; then
-#       NCCL_ENV+=" -x NCCL_TESTS_SPLIT_MASK=0x3"
-#elif [ "$PPN" -eq 2 ]; then
-#       NCCL_ENV+=" -x NCCL_TESTS_SPLIT_MASK=0x1"
-#elif [ "$PPN" -eq 1 ]; then
-#       NCCL_ENV+=" -x NCCL_TESTS_SPLIT_MASK=0x0"
-#else
-#       echo "NCCL_TESTS_SPLIT_MASK cannot be set for PPN = $PPN. Exiting."
-#       exit 1
-#fi
+if [ "$PPN" -eq 4 ]; then
+       NCCL_ENV+=" -x NCCL_TESTS_SPLIT_MASK=0x3"
+elif [ "$PPN" -eq 2 ]; then
+       NCCL_ENV+=" -x NCCL_TESTS_SPLIT_MASK=0x1"
+elif [ "$PPN" -eq 1 ]; then
+       NCCL_ENV+=" -x NCCL_TESTS_SPLIT_MASK=0x0"
+else
+       echo "NCCL_TESTS_SPLIT_MASK cannot be set for PPN = $PPN. Exiting."
+       exit 1
+fi
 
 if [ "$DEBUG" -eq 0 ]; then
         NCCL_ENV+=" -x NCCL_DEBUG=WARN"
