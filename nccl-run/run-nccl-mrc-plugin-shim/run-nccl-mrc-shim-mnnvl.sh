@@ -4,6 +4,8 @@ set -u
 NUM_NODES=$1
 BENCH=$2
 PPN=4
+qpn=$3
+dsp=$4
 
 DEBUG=${DEBUG:-0}
 LONG_RUN=${LONG_RUN:-0}
@@ -61,6 +63,7 @@ NCCL_ENV="
   -x UCX_NET_DEVICES=enP22p1s0f1 \
   -x NCCL_SOCKET_IFNAME=enP22p1s0f1 \
   -x NCCL_NET_PLUGIN=none \
+  -x NCCL_TUNER_PLUGIN=none \
   -x NCCL_IB_DISABLE=0 \
   -x NCCL_SHM_DISABLE=0 \
   -x NCCL_P2P_DISABLE=0 \
@@ -71,21 +74,11 @@ NCCL_ENV="
   -x NCCL_IB_GID_INDEX=3 \
   -x NCCL_NVLS_ENABLE=0 \
   -x NCCL_GDR_FLUSH_DISABLE=1 \
-  -x NCCL_IB_QPS_PER_CONNECTION=2 \
-  -x NCCL_IB_SPLIT_DATA_ON_QPS=1 \
+  -x NCCL_IB_QPS_PER_CONNECTION=$qpn \
+  -x NCCL_IB_SPLIT_DATA_ON_QPS=$dsp \
   -x NCCL_IB_TC=$((1 << 2)) -x NCCL_IB_FIFO_TC=$((3 << 2)) \
   -x NV_MRC_POST_SEND_PREFER_BF=1"
 
-if [ "$PPN" -eq 4 ]; then
-       NCCL_ENV+=" -x NCCL_TESTS_SPLIT_MASK=0x3"
-elif [ "$PPN" -eq 2 ]; then
-       NCCL_ENV+=" -x NCCL_TESTS_SPLIT_MASK=0x1"
-elif [ "$PPN" -eq 1 ]; then
-       NCCL_ENV+=" -x NCCL_TESTS_SPLIT_MASK=0x0"
-else
-       echo "NCCL_TESTS_SPLIT_MASK cannot be set for PPN = $PPN. Exiting."
-       exit 1
-fi
 
 if [ "$DEBUG" -eq 0 ]; then
         NCCL_ENV+=" -x NCCL_DEBUG=WARN"
