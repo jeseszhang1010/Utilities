@@ -4,8 +4,6 @@ set -u
 NUM_NODES=$1
 PPN=4
 BENCH=$2
-qpn=$3
-dsp=$4
 
 DEBUG=${DEBUG:-0}
 LONG_RUN=${LONG_RUN:-0}
@@ -40,7 +38,7 @@ fi
 NCCL_ENV="
   --allow-run-as-root \
   -mca plm_rsh_no_tree_spawn 1 -mca plm_rsh_num_concurrent 8192 \
-  --map-by ppr:$PPN:node --bind-to none \
+  --map-by ppr:2:numa --bind-to none \
   --hostfile $HOSTFILE \
    -x UCX_TLS=tcp \
   -x LD_LIBRARY_PATH \
@@ -62,8 +60,8 @@ NCCL_ENV="
   -x NCCL_IB_GID_INDEX=3 \
   -x NCCL_NVLS_ENABLE=0 \
   -x NCCL_GDR_FLUSH_DISABLE=0 \
-  -x NCCL_IB_QPS_PER_CONNECTION=$qpn \
-  -x NCCL_IB_SPLIT_DATA_ON_QPS=$dsp \
+  -x NCCL_IB_QPS_PER_CONNECTION=2 \
+  -x NCCL_IB_SPLIT_DATA_ON_QPS=1 \
   -x NCCL_IB_TC=$((1 << 2)) -x NCCL_IB_FIFO_TC=$((3 << 2)) \
   -x NV_MRC_POST_SEND_PREFER_BF=1"
 

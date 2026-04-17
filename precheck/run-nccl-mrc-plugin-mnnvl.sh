@@ -16,7 +16,6 @@ export LD_LIBRARY_PATH="${LD_LIBRARY_PATH:-}"
 module load mpi/hpcx
 
 export NCCL_LIB_PATH=/home/azhpcuser/zhanj/nccl/build/lib/
-#export NCCL_LIB_PATH=/home/azhpcuser/shim-test-setup/mrc-verbs-shim-lib/tests/nccl/nccl/build/lib/
 export NCCL_MRC_PLUGIN_PATH=/home/azhpcuser/zhanj/mrc-nccl-plugin/
 export LD_LIBRARY_PATH=$NCCL_MRC_PLUGIN_PATH:$NCCL_LIB_PATH:$LD_LIBRARY_PATH
 
@@ -33,7 +32,7 @@ if [ "$LONG_RUN" -eq 1 ]; then
     echo "Long running mode enabled: running at 4G indefinitely"
     COLL_ARGS="-w 50 -n 100 -b 4G -e 4G -g1 -c 1 -R 1 -N 0"
 else
-    COLL_ARGS="-b 4k -f2 -e 32G -g1 -c 1 -R 1 -w 50 -n 50 -N 1"
+    COLL_ARGS="-b 4k -f2 -e 4G -g1 -c 1 -R 1 -w 50 -n 50 -N 1"
 fi
 
 NCCL_ENV="
@@ -60,14 +59,12 @@ NCCL_ENV="
   -x NCCL_IB_ECE_ENABLE=0 \
   -x NCCL_IB_GID_INDEX=3 \
   -x NCCL_NVLS_ENABLE=0 \
-  -x NCCL_GDR_FLUSH_DISABLE=1 \
-  -x NCCL_GDRCOPY_ENABLE=1 -x NCCL_GDRCOPY_SYNC_ENABLE=1 \
+  -x NCCL_GDR_FLUSH_DISABLE=0 \
   -x NCCL_IB_QPS_PER_CONNECTION=2 \
-  -x NCCL_PROTO=LL128 \
   -x NCCL_IB_SPLIT_DATA_ON_QPS=1 \
   -x NCCL_IB_TC=$((1 << 2)) -x NCCL_IB_FIFO_TC=$((3 << 2)) \
   -x NV_MRC_POST_SEND_PREFER_BF=1"
-#  --cpu_bind_range 0-35,36-71,72-107,108-143 --mem_bind 0,0,1,1
+
 
 if [ "$DEBUG" -eq 0 ]; then
         NCCL_ENV+=" -x NCCL_DEBUG=WARN"
