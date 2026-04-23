@@ -70,6 +70,9 @@ if [ "$PPN" -eq 4 ]; then
        NCCL_ENV+=" -x NCCL_TESTS_SPLIT_MASK=0x3"
 elif [ "$PPN" -eq 2 ]; then
        NCCL_ENV+=" -x NCCL_TESTS_SPLIT_MASK=0x1"
+elif [ "$PPN" -eq 3 ]; then
+       export NCCL_TESTS_SPLIT="MOD 3"
+       NCCL_ENV+=" -x NCCL_TESTS_SPLIT"
 elif [ "$PPN" -eq 1 ]; then
        NCCL_ENV+=" -x NCCL_TESTS_SPLIT_MASK=0x0"
 else
